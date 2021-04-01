@@ -129,10 +129,12 @@ html {
 
 .login-modal {
     width: 350px;
+    position: absolute;
 }
 
 .signup-modal {
-    width: 375px;
+    width: 400px;
+    position: absolute;
 }
 
 .modal-col-gap{
