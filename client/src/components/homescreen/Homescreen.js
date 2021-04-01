@@ -22,6 +22,7 @@ const Homescreen = (props) => {
 
 	let todolists 							= [];
 	const [activeList, setActiveList] 		= useState({});
+	//const [closeListClicked, listClosed]    = useState(false);
 	const [showDelete, toggleShowDelete] 	= useState(false);
 	const [showLogin, toggleShowLogin] 		= useState(false);
 	const [showCreate, toggleShowCreate] 	= useState(false);
@@ -127,6 +128,7 @@ const Homescreen = (props) => {
 	};
 
 	const createNewList = async () => {
+		props.tps.clearAllTransactions();
 		const length = todolists.length
 		const id = length >= 1 ? todolists[length - 1].id + Math.floor((Math.random() * 100) + 1) : 1;
 		let list = {
@@ -144,7 +146,13 @@ const Homescreen = (props) => {
 		DeleteTodolist({ variables: { _id: _id }, refetchQueries: [{ query: GET_DB_TODOS }] });
 		refetch();
 		setActiveList({});
+		props.tps.clearAllTransactions();
 	};
+
+	const closeList = () => {
+		props.tps.clearAllTransactions();
+		setActiveList({});
+	}
 
 	const updateListField = async (_id, field, value, prev) => {
 		let transaction = new UpdateListField_Transaction(_id, field, prev, value, UpdateTodolistField);
@@ -225,6 +233,7 @@ const Homescreen = (props) => {
 									editItem={editItem} reorderItem={reorderItem}
 									setShowDelete={setShowDelete}
 									activeList={activeList} setActiveList={setActiveList}
+									closeList={closeList}
 								/>
 							</div>
 						:
