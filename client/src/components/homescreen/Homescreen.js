@@ -24,6 +24,7 @@ const Homescreen = (props) => {
 	const [tpsHasRedo, setTpsRedo]			= useState(false);
 	const [tpsHasUndo, setTpsUndo]			= useState(false);
 	const [activeList, setActiveList] 		= useState({});
+	const [addListActive, setAddListActive] = useState(true);
 	//const [closeListClicked, listClosed]    = useState(false);
 	const [showDelete, toggleShowDelete] 	= useState(false);
 	const [showLogin, toggleShowLogin] 		= useState(false);
@@ -53,6 +54,7 @@ const Homescreen = (props) => {
 				let tempID = activeList._id;
 				let list = todolists.find(list => list._id === tempID);
 				setActiveList(list);
+				setAddListActive(false);
 			}
 		}
 	}
@@ -151,6 +153,7 @@ const Homescreen = (props) => {
 		}
 		const { data } = await AddTodolist({ variables: { todolist: list }, refetchQueries: [{ query: GET_DB_TODOS }] });
 		setActiveList(list)
+		setAddListActive(false);
 	};
 
 	const deleteList = async (_id) => {
@@ -160,6 +163,7 @@ const Homescreen = (props) => {
 		setTpsRedo(false);
 		setTpsUndo(false);
 		setActiveList({});
+		setAddListActive(true);
 		//props.tps.clearAllTransactions();
 	};
 
@@ -168,6 +172,7 @@ const Homescreen = (props) => {
 		setTpsRedo(false);
 		setTpsUndo(false);
 		setActiveList({});
+		setAddListActive(true);
 	}
 
 	const updateListField = async (_id, field, value, prev) => {
@@ -189,12 +194,14 @@ const Homescreen = (props) => {
 		todolists = topList.concat(todolists.splice(index, 1));*/
 		if (activeList === todo) {
 			setActiveList(todo);
+			setAddListActive(false);
 		}
 		else {
 			props.tps.clearAllTransactions();
 			setTpsRedo(false);
 			setTpsUndo(false);
 			setActiveList(todo);
+			setAddListActive(false);
 		}
 		//setActiveList(todo);
 	};
@@ -254,7 +261,7 @@ const Homescreen = (props) => {
 							<SidebarContents
 								todolists={todolists} activeid={activeList.id} auth={auth}
 								handleSetActive={handleSetActive} createNewList={createNewList}
-								updateListField={updateListField}
+								updateListField={updateListField} addListActive={addListActive}
 							/>
 							:
 							<></>
