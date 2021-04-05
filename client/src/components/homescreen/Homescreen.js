@@ -21,6 +21,8 @@ import WInput from 'wt-frontend/build/components/winput/WInput';
 const Homescreen = (props) => {
 
 	let todolists 							= [];
+	const [tpsHasRedo, setTpsRedo]			= useState(false);
+	const [tpsHasUndo, setTpsUndo]			= useState(false);
 	const [activeList, setActiveList] 		= useState({});
 	//const [closeListClicked, listClosed]    = useState(false);
 	const [showDelete, toggleShowDelete] 	= useState(false);
@@ -58,12 +60,21 @@ const Homescreen = (props) => {
 	const tpsUndo = async () => {
 		const retVal = await props.tps.undoTransaction();
 		refetchTodos(refetch);
+		if (props.tps.getUndoSize() >= 1) {setTpsUndo(true)}
+		else {setTpsUndo(false)}
+		if (props.tps.getRedoSize() >= 1) {setTpsRedo(true)}
+		else {setTpsRedo(false)}
+		//setTpsRedo(true);
 		return retVal;
 	}
 
 	const tpsRedo = async () => {
 		const retVal = await props.tps.doTransaction();
 		refetchTodos(refetch);
+		if (props.tps.getUndoSize() >= 1) {setTpsUndo(true)}
+		else {setTpsUndo(false)}
+		if (props.tps.getRedoSize() >= 1) {setTpsRedo(true)}
+		else {setTpsRedo(false)}
 		return retVal;
 	}
 
@@ -145,12 +156,17 @@ const Homescreen = (props) => {
 	const deleteList = async (_id) => {
 		DeleteTodolist({ variables: { _id: _id }, refetchQueries: [{ query: GET_DB_TODOS }] });
 		refetch();
-		setActiveList({});
 		props.tps.clearAllTransactions();
+		setTpsRedo(false);
+		setTpsUndo(false);
+		setActiveList({});
+		//props.tps.clearAllTransactions();
 	};
 
 	const closeList = () => {
 		props.tps.clearAllTransactions();
+		setTpsRedo(false);
+		setTpsUndo(false);
 		setActiveList({});
 	}
 
@@ -163,9 +179,29 @@ const Homescreen = (props) => {
 
 	const handleSetActive = (id) => {
 		const todo = todolists.find(todo => todo.id === id || todo._id === id);
-		setActiveList(todo);
+		/*let index = -1;
+		for (let i = 0; i < todolists.length; i++) {
+			if (todolists[i] === todo) {
+				index = i;
+			}
+		}
+		let topList = [todo];
+		todolists = topList.concat(todolists.splice(index, 1));*/
+		if (activeList === todo) {
+			setActiveList(todo);
+		}
+		else {
+			props.tps.clearAllTransactions();
+			setTpsRedo(false);
+			setTpsUndo(false);
+			setActiveList(todo);
+		}
+		//setActiveList(todo);
 	};
 
+	/*const tpsHasUndo = () => {
+		props.tps.hasTransactionToUndo();
+	}*/
 	
 	/*
 		Since we only have 3 modals, this sort of hardcoding isnt an issue, if there
@@ -189,6 +225,8 @@ const Homescreen = (props) => {
 		toggleShowLogin(false);
 		toggleShowDelete(!showDelete)
 	}
+
+
 
 	return (
 		<WLayout wLayout="header-lside">
@@ -233,6 +271,7 @@ const Homescreen = (props) => {
 									setShowDelete={setShowDelete}
 									activeList={activeList} setActiveList={setActiveList}
 									closeList={closeList} undo={tpsUndo} redo={tpsRedo}
+									tpsHasRedo={tpsHasRedo} tpsHasUndo={tpsHasUndo}
 								/>
 							</div>
 						:
