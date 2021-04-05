@@ -93,7 +93,7 @@ const Homescreen = (props) => {
 			id: lastID,
 			description: 'No Description',
 			due_date: 'No Date',
-			assigned_to: props.user._id,
+			assigned_to: 'No Assignment',
 			completed: false
 		};
 		let opcode = 1;
