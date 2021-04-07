@@ -11,6 +11,11 @@ const TableEntry = (props) => {
     const due_date = data.due_date;
     const status = data.completed ? 'complete' : 'incomplete';
     const assigned_to = data.assigned_to;
+    //const moveUpDisabled = props.moveUpDisabled;
+    //const moveDownDisabled = props.moveDownDisabled;
+    const topElementId = props.topElementId;
+    const bottomElementId = props.bottomElementId;
+
     const [editingDate, toggleDateEdit] = useState(false);
     const [editingDescr, toggleDescrEdit] = useState(false);
     const [editingStatus, toggleStatusEdit] = useState(false);
@@ -107,10 +112,10 @@ const TableEntry = (props) => {
 
             <WCol size="3">
                 <div className='button-group'>
-                    <WButton className="table-entry-buttons" onClick={() => props.reorderItem(data._id, -1)} wType="texted">
+                    <WButton className="table-entry-buttons" onClick={() => props.reorderItem(data._id, -1)} wType="texted" disabled={data._id === topElementId ? true : false}>
                         <i className="material-icons">expand_less</i>
                     </WButton>
-                    <WButton className="table-entry-buttons" onClick={() => props.reorderItem(data._id, 1)} wType="texted">
+                    <WButton className="table-entry-buttons" onClick={() => props.reorderItem(data._id, 1)} wType="texted" disabled={data._id === bottomElementId ? true : false}>
                         <i className="material-icons">expand_more</i>
                     </WButton>
                     <WButton className="table-entry-buttons" onClick={() => props.deleteItem(data, props.index)} wType="texted">

@@ -179,7 +179,7 @@ export class jsTPS {
         // AND NOW ADD THE TRANSACTION
         this.transactions.push(transaction);
         // AND EXECUTE IT
-        // this.doTransaction();        
+        //this.doTransaction();        
     }
 
     /**

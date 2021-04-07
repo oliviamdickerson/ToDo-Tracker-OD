@@ -37,7 +37,9 @@ const Homescreen = (props) => {
 	const [DeleteTodoItem] 			= useMutation(mutations.DELETE_ITEM);
 	const [AddTodolist] 			= useMutation(mutations.ADD_TODOLIST);
 	const [AddTodoItem] 			= useMutation(mutations.ADD_ITEM);
-
+	
+	const [topElementId, setTopElementId] = useState(-1);
+	const [bottomElementId, setBottomElementId] = useState(-1);
 
 	const { loading, error, data, refetch } = useQuery(GET_DB_TODOS);
 	if(loading) { console.log(loading, 'loading'); }
@@ -54,6 +56,10 @@ const Homescreen = (props) => {
 				let tempID = activeList._id;
 				let list = todolists.find(list => list._id === tempID);
 				setActiveList(list);
+				/*if (activeList.items.length > 0) {
+					setTopElementId(activeList.items[0]._id);
+					setBottomElementId(activeList.items[activeList.items.length-1]._id);
+				}*/
 				setAddListActive(false);
 			}
 		}
@@ -102,6 +108,8 @@ const Homescreen = (props) => {
 		let transaction = new UpdateListItems_Transaction(listID, itemID, newItem, opcode, AddTodoItem, DeleteTodoItem);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
+		setTopElementId(activeList.items[0]._id);
+		setBottomElementId(activeList.items[activeList.items.length-1]._id);
 	};
 
 
@@ -120,6 +128,8 @@ const Homescreen = (props) => {
 		let transaction = new UpdateListItems_Transaction(listID, itemID, itemToDelete, opcode, AddTodoItem, DeleteTodoItem, index);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
+		setTopElementId(activeList.items[0]._id);
+		setBottomElementId(activeList.items[activeList.items.length-1]._id);
 	};
 
 	const editItem = async (itemID, field, value, prev) => {
@@ -137,8 +147,38 @@ const Homescreen = (props) => {
 		let transaction = new ReorderItems_Transaction(listID, itemID, dir, ReorderTodoItems);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
-
+		/*let index = -1;
+		for (let i = 0; i < activeList.items.length; i++) {
+			if (activeList.items[i]._id === itemID) {
+				index = i;
+			}
+		}
+		resetTopBotElem(index, dir);*/
+		setActiveList(activeList);
+		if (activeList.items.length > 0) {
+			setTopElementId(activeList.items[0]._id);
+			setBottomElementId(activeList.items[activeList.items.length-1]._id);
+		}
 	};
+
+	const resetTopBotElem = (index, dir) => {
+		if ((index === 1) && (dir === -1)) {
+			setTopElementId(activeList.items[1]._id);
+		}
+		else if ((index === 0) && (dir === 1)) {
+			setTopElementId(activeList.items[1]._id);
+		}
+		else if ((index === activeList.items.length-1) && (dir === -1)) {
+			setBottomElementId(activeList.items[activeList.items.length-2]._id);
+		}
+		else if ((index === activeList.items.length-2) && (dir === 1)) {
+			setBottomElementId(activeList.items[activeList.items.length-2]._id);
+		}
+		else {
+			setTopElementId(activeList.items[0]._id);
+			setBottomElementId(activeList.items[activeList.items.length-1]._id);
+		}
+	}
 
 	const createNewList = async () => {
 		props.tps.clearAllTransactions();
@@ -157,6 +197,8 @@ const Homescreen = (props) => {
    			let _id = data.addTodolist;
    			let newList = todolists.find(list => list._id === _id);
    			setActiveList(newList)
+			//setTopElementId(activeList.items[0]._id);
+			//setBottomElementId(activeList.items[activeList.items.length-1]._id);
   		} 
 		setAddListActive(false);
 	};
@@ -183,7 +225,7 @@ const Homescreen = (props) => {
 	const updateListField = async (_id, field, value, prev) => {
 		let transaction = new UpdateListField_Transaction(_id, field, prev, value, UpdateTodolistField);
 		props.tps.addTransaction(transaction);
-		tpsRedo();
+		//tpsRedo();
 
 	};
 
@@ -199,6 +241,10 @@ const Homescreen = (props) => {
 		todolists = topList.concat(todolists.splice(index, 1));*/
 		if (activeList === todo) {
 			setActiveList(todo);
+			if (activeList.items.length > 0) {
+				setTopElementId(activeList.items[0]._id);
+				setBottomElementId(activeList.items[activeList.items.length-1]._id);
+			}
 			setAddListActive(false);
 		}
 		else {
@@ -206,6 +252,10 @@ const Homescreen = (props) => {
 			setTpsRedo(false);
 			setTpsUndo(false);
 			setActiveList(todo);
+			if (todo.items.length > 0) {
+				setTopElementId(todo.items[0]._id);
+				setBottomElementId(todo.items[todo.items.length-1]._id);
+			}
 			setAddListActive(false);
 		}
 		//setActiveList(todo);
@@ -240,8 +290,6 @@ const Homescreen = (props) => {
 		toggleShowDelete(!showDelete)
 		setAddListActive(true);
 	}
-
-
 
 	return (
 		<WLayout wLayout="header-lside">
@@ -287,6 +335,7 @@ const Homescreen = (props) => {
 									activeList={activeList} setActiveList={setActiveList}
 									closeList={closeList} undo={tpsUndo} redo={tpsRedo}
 									tpsHasRedo={tpsHasRedo} tpsHasUndo={tpsHasUndo}
+									topElementId={topElementId} bottomElementId={bottomElementId}
 								/>
 							</div>
 						:
