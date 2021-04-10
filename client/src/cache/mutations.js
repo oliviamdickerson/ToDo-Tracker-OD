@@ -74,6 +74,19 @@ export const REORDER_ITEMS = gql`
 	}
 `;
 
+/*export const SORT_ITEMS = gql`
+	mutation SortItems($_id: String!, $sortCriteria: String!) {
+		sortList(_id: $_id, sortCriteria: $sortCriteria) {
+			_id
+			id
+			description
+			due_date
+			assigned_to
+			completed
+		}
+	}
+`;*/
+
 export const ADD_TODOLIST = gql`
 	mutation AddTodolist($todolist: TodoInput!) {
 		addTodolist(todolist: $todolist) 

@@ -7,20 +7,21 @@ const TableHeader = (props) => {
     const buttonStyle = props.disabled ? ' table-header-button-disabled ' : 'table-header-button ';
     const redoStyle = !props.tpsHasRedo ? ' table-header-button-disabled ' : 'table-header-button ';
     const undoStyle = !props.tpsHasUndo ? ' table-header-button-disabled ' : 'table-header-button ';
+    //const listOpen = props.openList; 
     const clickDisabled = () => { };
 
     return (
         <WRow className="table-header">
             <WCol size="3">
-                <WButton className='table-header-section' wType="texted" >Task</WButton>
+                <WButton className='table-header-section' wType="texted" /*onClick={listOpen ? props.handleSortList("description") : clickDisabled}*/>Task</WButton>
             </WCol>
 
             <WCol size="2">
-                <WButton className='table-header-section' wType="texted">Due Date</WButton>
+                <WButton className='table-header-section' wType="texted" /*onClick={listOpen ? props.handleSortList("due_date") : clickDisabled}*/>Due Date</WButton>
             </WCol>
 
             <WCol size="2">
-                <WButton className='table-header-section' wType="texted" >Status</WButton>
+                <WButton className='table-header-section' wType="texted" /*onClick={listOpen ? props.handleSortList("completed") : clickDisabled}*/ >Status</WButton>
             </WCol>
             <WCol size="2">
                 <WButton className='table-header-section' wType="texted" >Assigned To</WButton>

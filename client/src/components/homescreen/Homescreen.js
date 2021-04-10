@@ -14,7 +14,8 @@ import { WLayout, WLHeader, WLMain, WLSide } from 'wt-frontend';
 import { UpdateListField_Transaction, 
 	UpdateListItems_Transaction, 
 	ReorderItems_Transaction, 
-	EditItem_Transaction } 				from '../../utils/jsTPS';
+	EditItem_Transaction,
+	/*SortItems_Transaction*/} 				from '../../utils/jsTPS';
 import WInput from 'wt-frontend/build/components/winput/WInput';
 
 
@@ -31,6 +32,7 @@ const Homescreen = (props) => {
 	const [showCreate, toggleShowCreate] 	= useState(false);
 
 	const [ReorderTodoItems] 		= useMutation(mutations.REORDER_ITEMS);
+	//const [SortTodoItems]			= useMutation(mutations.SORT_ITEMS);
 	const [UpdateTodoItemField] 	= useMutation(mutations.UPDATE_ITEM_FIELD);
 	const [UpdateTodolistField] 	= useMutation(mutations.UPDATE_TODOLIST_FIELD);
 	const [DeleteTodolist] 			= useMutation(mutations.DELETE_TODOLIST);
@@ -108,8 +110,15 @@ const Homescreen = (props) => {
 		let transaction = new UpdateListItems_Transaction(listID, itemID, newItem, opcode, AddTodoItem, DeleteTodoItem);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
-		setTopElementId(activeList.items[0]._id);
-		setBottomElementId(activeList.items[activeList.items.length-1]._id);
+		
+		if (activeList.items.length > 0) {
+			setTopElementId(activeList.items[0]._id);
+			setBottomElementId(activeList.items[activeList.items.length-1]._id);
+		}
+		else {
+			setTopElementId(newItem._id);
+			setBottomElementId(newItem._id);
+		}
 	};
 
 
@@ -160,6 +169,14 @@ const Homescreen = (props) => {
 			setBottomElementId(activeList.items[activeList.items.length-1]._id);
 		}
 	};
+
+	/*const sortList = async (sortingCriteria) => {
+		let listID = activeList._id;
+		let transaction = new SortItems_Transaction(listID, sortingCriteria, SortTodoItems);
+		props.tps.addTransaction(transaction);
+		tpsRedo();
+		setActiveList(activeList);
+	}*/
 
 	const resetTopBotElem = (index, dir) => {
 		if ((index === 1) && (dir === -1)) {
@@ -225,8 +242,7 @@ const Homescreen = (props) => {
 	const updateListField = async (_id, field, value, prev) => {
 		let transaction = new UpdateListField_Transaction(_id, field, prev, value, UpdateTodolistField);
 		props.tps.addTransaction(transaction);
-		//tpsRedo();
-
+		tpsRedo();
 	};
 
 	const handleSetActive = (id) => {
@@ -336,6 +352,7 @@ const Homescreen = (props) => {
 									closeList={closeList} undo={tpsUndo} redo={tpsRedo}
 									tpsHasRedo={tpsHasRedo} tpsHasUndo={tpsHasUndo}
 									topElementId={topElementId} bottomElementId={bottomElementId}
+									/*handleSortList={sortList} openList={activeList}*/
 								/>
 							</div>
 						:
